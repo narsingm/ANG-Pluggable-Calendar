@@ -13,10 +13,6 @@ $popup-background: #fff;
 $popup-border-radius: 5px;
 $popup-width: 30%;
 
-body{
-  padding: 0.5rem !important;
-}
-
 h2 {
   margin: 0;
   font-size: $h2-font-size;
@@ -26,12 +22,13 @@ ul {
   margin: 0;
   padding: 0 $ul-padding-left;
   list-style-type: square;
+  li:not(:last-child) {
+    margin: $li-not-last-child-margin;
+    padding: 0;
+  }
 }
 
-li:not(:last-child) {
-  margin: $li-not-last-child-margin;
-  padding: 0;
-}
+
 
 b {
   margin-right: $b-margin-right;
@@ -42,30 +39,29 @@ b {
   min-height: 100%;
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
   font-size: $demo-app-font-size;
-}
-
-.demo-app-sidebar-container {
-  max-width: 300px;
-  line-height: 1.5;
-  display: flex;
-  flex-direction: column;
   gap: .8rem;
-}
+  padding: 1rem;
+  .demo-app-sidebar-container {
+    max-width: 300px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+  }
+  .demo-app-sidebar-card {
+    padding: 2em;
+    background: $demo-app-sidebar-card-background;
+    border-radius: 6px;
 
-.demo-app-sidebar-card {
-  padding: 2em;
-  background: $demo-app-sidebar-card-background;
-  border-radius: 6px;
-
-  &.events-list {
-    max-height: $demo-app-sidebar-card-max-height;
-    overflow: auto;
+    &.events-list {
+      max-height: $demo-app-sidebar-card-max-height;
+      overflow: auto;
+    }
   }
 }
 
 .demo-app-main {
   flex-grow: 1;
-  padding: 1.5em;
   padding-top: 0;
 }
 

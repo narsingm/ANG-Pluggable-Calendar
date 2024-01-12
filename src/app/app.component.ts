@@ -6,6 +6,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { INITIAL_EVENTS, createEventId } from './event-utils';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ConfirmationModalComponent, AddEventModalComponent } from './modules/modals';  // Update the path accordingly
+
 
 
 @Component({
@@ -51,13 +53,6 @@ export class AppComponent {
     */
   });
   currentEvents = signal<EventApi[]>([]);
-  closeResult: string | undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public clickInfo?: any = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public selectInfo?: any = null;
-  public messageString = "";
-  public formTitle = "";
   constructor(private changeDetector: ChangeDetectorRef, private modalService: BsModalService) { }
 
   handleCalendarToggle() {
@@ -71,62 +66,40 @@ export class AppComponent {
   }
 
   handleDateSelect(selectInfo: DateSelectArg) {
-    this.selectInfo = selectInfo;
-    this.formmodalRef = this.modalService.show(this.formtemplateRef as TemplateRef<void>);
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
+    this.formmodalRef = this.modalService.show(AddEventModalComponent, {});
+    this.formmodalRef.content.onConfirm.subscribe((confirmation: any) => {
+      if (confirmation) {
+        selectInfo.view.calendar.addEvent({
+          id: createEventId(),
+          title: confirmation.formTitle,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay
+        });
+      }
+    });
+
   }
 
   handleEventClick(clickInfo: EventClickArg) {
-    this.clickInfo = clickInfo;
-    this.messageString = `Are you sure you want to delete the event '${clickInfo.event.title}'?`
-    this.modalRef = this.modalService.show(this.templateRef as TemplateRef<void>);
+    const messageString = `Are you sure you want to delete the event '${clickInfo.event.title}'?`
+    this.modalRef = this.modalService.show(ConfirmationModalComponent, {
+      initialState: {
+        message: messageString
+      }
+    });
+
+    this.modalRef.content.onConfirm.subscribe((confirmation: boolean) => {
+      if (confirmation) {
+        clickInfo.event.remove();
+      }
+    });
   }
 
   handleEvents(events: EventApi[]) {
     this.currentEvents.set(events);
     this.changeDetector.detectChanges();
-  }
-
-  openModal(template: TemplateRef<void>) {
-    this.formmodalRef = this.modalService.show(template);
-  }
-
-  confirm(): void {
-    if (this.confirmResolve) {
-      this.confirmResolve();
-    }
-    this.clickInfo.event.remove();
-    this.clickInfo = null;
-    this.modalRef?.hide();
-  }
-
-  decline(): void {
-    if (this.confirmReject) {
-      this.confirmReject();
-    }
-    this.modalRef?.hide();
-  }
-
-  submit(): void {
-    if (this.confirmResolve) {
-      this.confirmResolve();
-    }
-    if (this.formTitle) {
-      this.selectInfo.view.calendar.addEvent({
-        id: createEventId(),
-        title: this.formTitle,
-        start: this.selectInfo.startStr,
-        end: this.selectInfo.endStr,
-        allDay: this.selectInfo.allDay
-      });
-    }
-    this.selectInfo = null;
-    this.formTitle = "";
-    this.formmodalRef?.hide();
-  }
-
-  close(): void {
-    this.formmodalRef?.hide();
   }
 }

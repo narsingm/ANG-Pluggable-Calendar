@@ -7,10 +7,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { createCustomElement } from '@angular/elements';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { FormsModule } from '@angular/forms';
+import { ConfirmationModalComponent, AddEventModalComponent } from './modules/modals';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ConfirmationModalComponent,
+    AddEventModalComponent
   ],
   imports: [
     BrowserModule,
